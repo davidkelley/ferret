@@ -1,0 +1,34 @@
+{
+  "manifest_version": 2,
+
+  "name": "Ferret",
+
+  "description": "Chrome Extension, providing an API for communicating with peripheral devices.",
+
+  "default_locale": "en",
+
+  "version": "0.0.1",
+
+  "offline_enabled": true,
+
+  "minimum_chrome_version": "25",
+
+  "background": {
+    "scripts": [
+      "libs/require.js",
+      "main.js"
+    ],
+    "persistent": false
+  },
+
+  "permissions": ["usb", "fileSystem"],
+
+  "optional_permissions": [ 
+    { "usbDevices": 
+      [
+        {"vendorId": 2338, "productId": 32}
+      ]
+    }
+  ]
+
+}
