@@ -1,0 +1,29 @@
+{
+	"name": "ferret",
+	"title": "Ferret",
+	"description": "Chrome Extension, providing an API for communicating with peripheral devices.",
+	"version": "0.0.1",
+	"homepage": "http://davidkelley.me/ferret",
+	"author": {
+		"name": "Just Eat",
+		"url": "https://github.com/davidkelley/ferret/blob/master/AUTHORS.txt"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/davidkelley/ferret.git"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"grunt": "~0.4.1",
+		"grunt-compare-size": "~0.4.0",
+		"grunt-git-authors": "~1.2.0",
+		"grunt-contrib-watch": "~0.4.4",
+		"grunt-contrib-jshint": "~0.6.0",
+		"grunt-contrib-uglify": "~0.2.2",
+		"gzip-js": "0.3.2",
+		"testswarm": "~1.1.0",
+		"archiver": "~0.4.6",
+		"grunt-jsonlint": "~1.0.0"
+	},
+	"keywords": []
+}
