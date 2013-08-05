@@ -3,7 +3,7 @@ module.exports = (grunt) ->
   grunt.initConfig {
     pkg: grunt.file.readJSON('package.json'),
     copy: {
-      main: {
+      build: {
         files: [
           { src: "manifest.json", dest: "build/manifest.json" }
         ]
@@ -15,19 +15,23 @@ module.exports = (grunt) ->
         stripBanners: true,
         banner: "/*! Application Dependencies /*\n"
       },
-      libs: {
-        src: 'bower_components/*/(require|index).js',
+      build: {
+        src: ['bower_components/*/index.js', 'bower_components/*/require.js'],
         dest: 'build/libs.js'
       }
     },
-    
+
     coffee: {
       options: {
         banner: '/*! <%= pkg.name %> <%= pkg.version %> */\n'
       },
       build: {
-        src: 'src/**/*.coffee',
-        dest: 'output/'
+        expand: true,
+        flatten: false,
+        cwd: 'src',
+        src: ['**/*.coffee'],
+        dest: 'build/',
+        ext: '.js'
       }
     }
   }

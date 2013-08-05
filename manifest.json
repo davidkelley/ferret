@@ -15,8 +15,7 @@
 
   "background": {
     "scripts": [
-      "libs/require.js",
-      "main.js"
+      "libs.js"
     ],
     "persistent": false
   },
