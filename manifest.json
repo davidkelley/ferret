@@ -15,7 +15,8 @@
 
   "background": {
     "scripts": [
-      "libs.js"
+      "libs.js",
+      "main.js"
     ],
     "persistent": false
   },

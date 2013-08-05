@@ -1,4 +1,10 @@
 module.exports = (grunt) ->
+
+  #TODO: Grab file list using Grunt function
+  modules = ['handler', 'listener', 'usb']
+
+  grunt.log.oklns 'Building Ferret'
+  grunt.log.subhead "Found module: #{module}" for module in modules
   
   grunt.initConfig {
     pkg: grunt.file.readJSON('package.json'),
@@ -27,9 +33,6 @@ module.exports = (grunt) ->
     },
 
     coffee: {
-      options: {
-        banner: '/*! <%= pkg.name %> <%= pkg.version %> */\n'
-      },
       build: {
         expand: true,
         flatten: false,
@@ -38,15 +41,50 @@ module.exports = (grunt) ->
         dest: 'build/',
         ext: '.js'
       }
+    },
+
+    requirejs: {
+      build: {
+        options: {
+          out: "build/main.js",
+          baseUrl: "build",
+          paths: (->
+            obj = {}
+            obj[module] = "modules/#{module}" for module in modules
+            return obj
+          )(),
+          include: modules
+        }
+      }
+    },
+
+    uglify: {
+      options: {
+        banner: '/* <%= pkg.name %> <%= pkg.version %> - Compiled: <%= grunt.template.today("yyyy-mm-dd") %> */\n',
+        report: 'min'
+      },
+      build: {
+        expand: true,
+        flatten: false,
+        cwd: 'build',
+        src: ['**/*.js'],
+        dest: 'build/',
+        ext: '.js'
+      }
     }
   }
 
   #load npm tasks
-  grunt.loadNpmTasks 'grunt-contrib-coffee'
-  grunt.loadNpmTasks 'grunt-contrib-copy'
-  grunt.loadNpmTasks 'grunt-contrib-concat'
-  grunt.loadNpmTasks 'grunt-coffeelint'
-  #grunt.loadNpmTasks 'grunt-contrib-requirejs'
+  grunt.loadNpmTasks "grunt-#{task}" for task in [
+    'contrib-coffee', 
+    'contrib-copy', 
+    'contrib-concat', 
+    'contrib-concat', 
+    'contrib-uglify', 
+    'coffeelint', 
+    'contrib-requirejs'
+  ]
 
   #Register tasks and associated npm tasks
-  grunt.registerTask 'build', ['coffeelint', 'copy', 'concat', 'coffee']
+  grunt.registerTask 'build', ['coffeelint', 'copy', 'concat', 'coffee', 'requirejs', 'uglify']
+
