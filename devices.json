@@ -1,0 +1,14 @@
+{
+  "usbDevices": {
+    "printers": [
+      {
+        "name": "EPSON TM-T20",
+        "device": { "vendorId": "04B8", "productId": "0202" }
+      },
+      {
+        "name": "EPSON TM-T70",
+        "device": {"vendorId": "04B8", "productId": "0E03"}
+      }
+    ]
+  }
+}

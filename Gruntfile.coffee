@@ -1,26 +1,45 @@
-module.exports = (grunt) ->
+#determine required command line parameters
+flags = []
 
+#iterate over all supported devices and create JSON object strings. NOT stringified versions.
+manifest = (devices) ->
+  str = ""
+  for type in devices
+    for device in type
+      id = device.device
+      str += "{\"vendorId\": \"#{id.vendorId}\", \"productId\": \"#{id.productId}\"},\n"
+
+module.exports = (grunt) ->
+  options = {}
   #TODO: Grab file list using Grunt function
   modules = ['handler', 'listener', 'usb']
 
-  grunt.log.oklns 'Building Ferret'
-  grunt.log.subhead "Found module: #{module}" for module in modules
+  #read the package file for this Grunt compiler
+  pkg = grunt.file.readJSON('package.json')
+
+  #loop over all flags and ensure they are set
+  for flag in flags
+    pkg[flag] = grunt.option(flag)
+    unless pkg[flag]?
+      throw "No #{flag} parameter supplied, use --#{flag}"
+
+  #read all devices - #jsonify is custom function (bottom of file)
+  devices = grunt.file.readJSON('devices.json')
+
+  #log some debugging information
+  grunt.log.oklns "Building Ferret. Version #{pkg.version}"
+  grunt.log.subhead "Using module: #{module}" for module in modules
   
   grunt.initConfig {
-    pkg: grunt.file.readJSON('package.json'),
+    #push package settings to configuration
+    pkg: pkg
 
+    #run coffeelint on all files to ensure coding conformity
     coffeelint: {
       build: ['src/**/*.coffee']
     },
 
-    copy: {
-      build: {
-        files: [
-          { src: "manifest.json", dest: "build/manifest.json" }
-        ]
-      }
-    },
-
+    #concatenate external third party libraries into a singular file
     concat: {
       options: {
         stripBanners: true,
@@ -32,6 +51,7 @@ module.exports = (grunt) ->
       }
     },
 
+    #compile coffeescript files into javascript files inside the build directory
     coffee: {
       build: {
         expand: true,
@@ -43,6 +63,7 @@ module.exports = (grunt) ->
       }
     },
 
+    #run the requirejs optimizer to resolve module dependencies into one file
     requirejs: {
       build: {
         options: {
@@ -58,9 +79,10 @@ module.exports = (grunt) ->
       }
     },
 
+    #uglify all remaining javascript inside the build directory
     uglify: {
       options: {
-        banner: '/* <%= pkg.name %> <%= pkg.version %> - Compiled: <%= grunt.template.today("yyyy-mm-dd") %> */\n',
+        banner: "/* #{pkg.title} #{pkg.version} - Compiled: <%= grunt.template.today(\"yyyy-mm-dd\") %> */\n",
         report: 'min'
       },
       build: {
@@ -70,6 +92,35 @@ module.exports = (grunt) ->
         src: ['**/*.js'],
         dest: 'build/',
         ext: '.js'
+      }
+    },
+
+    #replace all occurences of command line flags inside files
+    replace: {
+      build: {
+        options: {
+          variables: (->
+            #format devices object into Chrome Manifest standard
+            pkg.devices = JSON.stringify((->
+              obj = {}
+              #loop through ports
+              for key, port of devices
+                arr = []
+                #loop through each type for each port
+                for type of port
+                  #get the supported device in each type
+                  for device in port[type]
+                    #push vendorID and productID to array
+                    arr.push device.device
+                obj[key] = arr
+              return obj
+            )())
+            return pkg
+          )()
+        }
+        files: [
+          { src: "manifest.json", dest: "build/manifest.json" }
+        ]
       }
     }
   }
@@ -82,9 +133,10 @@ module.exports = (grunt) ->
     'contrib-concat', 
     'contrib-uglify', 
     'coffeelint', 
-    'contrib-requirejs'
+    'contrib-requirejs',
+    'replace'
   ]
 
   #Register tasks and associated npm tasks
-  grunt.registerTask 'build', ['coffeelint', 'copy', 'concat', 'coffee', 'requirejs', 'uglify']
+  grunt.registerTask 'build', ['coffeelint', 'replace', 'concat', 'coffee', 'requirejs', 'uglify']
 
