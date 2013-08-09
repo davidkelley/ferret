@@ -2,12 +2,18 @@
   "usbDevices": {
     "printers": [
       {
-        "name": "EPSON TM-T20",
-        "device": { "vendorId": "04B8", "productId": "0202" }
+        "name": "EPSON TM-T70",
+        "device": { "vendorId": 1208, "productId": 514 },
+        "port": 0,
+        "endpoint": 1,
+        "actions": "epson"
       },
       {
-        "name": "EPSON TM-T70",
-        "device": {"vendorId": "04B8", "productId": "0E03"}
+        "name": "EPSON TM-T20",
+        "device": { "vendorId": 1208, "productId": 13703 },
+        "port": 0,
+        "endpoint": 1,
+        "actions": "epson"
       }
     ]
   }

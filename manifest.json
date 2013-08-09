@@ -9,18 +9,14 @@
 
   "homepage_url": "@@homepage",
 
-  "default_locale": "en",
-
   "offline_enabled": true,
 
   "minimum_chrome_version": "25",
 
-  "background": {
-    "scripts": [
-      "libs.js",
-      "main.js"
-    ],
-    "persistent": false
+  "app": {
+    "background": {
+      "scripts": [ "libs.js", "main.js" ]
+    }
   },
 
   "permissions": ["usb", "fileSystem"],

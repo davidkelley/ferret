@@ -1,18 +1,11 @@
 #determine required command line parameters
 flags = []
 
-#iterate over all supported devices and create JSON object strings. NOT stringified versions.
-manifest = (devices) ->
-  str = ""
-  for type in devices
-    for device in type
-      id = device.device
-      str += "{\"vendorId\": \"#{id.vendorId}\", \"productId\": \"#{id.productId}\"},\n"
+#TODO: Grab file list using Grunt function
+modules = ['handler', 'listener', 'usb', 'devices']
 
 module.exports = (grunt) ->
   options = {}
-  #TODO: Grab file list using Grunt function
-  modules = ['handler', 'listener', 'usb']
 
   #read the package file for this Grunt compiler
   pkg = grunt.file.readJSON('package.json')
@@ -46,7 +39,7 @@ module.exports = (grunt) ->
         banner: "/*! Application Dependencies /*\n"
       },
       build: {
-        src: ['bower_components/*/index.js', 'bower_components/*/require.js'],
+        src: ['bower_components/*/jquery.js', 'bower_components/*/require.js'],
         dest: 'build/libs.js'
       }
     },
@@ -119,7 +112,16 @@ module.exports = (grunt) ->
           )()
         }
         files: [
-          { src: "manifest.json", dest: "build/manifest.json" }
+          { src: "manifest.json", dest: "build/manifest.json" },
+        ]
+      }
+    },
+
+    #copy files into the build
+    copy: {
+      build: {
+        files: [
+          { src: 'devices.json', dest: 'build/devices.json' }
         ]
       }
     }
@@ -138,5 +140,5 @@ module.exports = (grunt) ->
   ]
 
   #Register tasks and associated npm tasks
-  grunt.registerTask 'build', ['coffeelint', 'replace', 'concat', 'coffee', 'requirejs', 'uglify']
+  grunt.registerTask 'build', ['coffeelint', 'concat', 'coffee', 'requirejs', 'uglify', 'replace', 'copy']
 
