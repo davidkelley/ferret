@@ -19,7 +19,7 @@ define ['usb', 'devices'], (usb, devices) ->
 
     #enqueue asynchronous functions so that they can be
     #accessed and enqueued externally as synchronous functions
-    @_queue: [],
+    @_queued: [],
 
     #find the active device of type and setup handle
     @constructor: (type, frames) ->
@@ -46,8 +46,11 @@ define ['usb', 'devices'], (usb, devices) ->
                     that._claimed = true
                     that._device = stored
                     that._handle = found[0]
+
+                    #proc any queued method calls
+                    fn.call(that) for fn in that._queued
               else
-                throw "No active devices found"
+                throw { message: "No active devices found" }
           )()
 
       #return self
@@ -85,20 +88,48 @@ define ['usb', 'devices'], (usb, devices) ->
 
     #determine if this device object has an active handle
     @ready: ->
-      #TODO
+      return if @_handle? and @_device? then true else false
 
     #send the contents of the bound buffer to the device
     @send: (callback) ->
-      if @buffer?
-        #define the data object
-        data =
-          direction: "out",
-          endpoint: @device.endpoint,
-          data: @buffer
+      #ensure device is ready..
+      if @ready?
+        if @buffer?
+          #define the data object
+          data =
+            direction: "out",
+            endpoint: @device.endpoint,
+            data: @buffer
 
-        #transfer!
-        usb.bulkTransfer @handle, data, (e) ->
-          callback(e.resultCode) if typeof callback is "function"
+          #transfer!
+          usb.bulkTransfer @handle, data, (e) ->
+            callback(e.resultCode) if typeof callback is "function"
+        else
+          throw { message: "No buffer object bound" }
+      else
+        #enqueue this call
+        @_queued.push ->
+          @send callback
+
+    #receive data from the device
+    @receive: (bytes, callback) ->
+      if @ready?
+        if @buffer?
+          #define the data to send
+          data =
+            direction: "in",
+            endpoint: @device.endpoint,
+            data: @buffer,
+            length: bytes
+
+          #receive with callback
+          usb.bulkTransfer @handle, data, (e) ->
+            callback(e.resultCode, e.data) if typeof callback is "function"
+        else
+          throw { message: "No buffer object bound" }
+      else
+        @_queued.push ->
+          @send bytes, callback
 
     #wrapper for chrome device error messages
     @error: ->
@@ -119,6 +150,6 @@ define ['usb', 'devices'], (usb, devices) ->
   #return the buffer object
   Device.prototype.__defineGetter__ 'buffer', ->
     #return the underlying ArrayBuffer representation of the Buffer object
-    @_buffer.ArrayBuffer Uint8Array
+    @_buffer?.ArrayBuffer Uint8Array
 
   return Device
