@@ -4,7 +4,7 @@ define [], ->
   class Frame
 
     #store the data for this frame
-    @data: [];
+    @data: []
 
     #convert any strings passed into the frame
     @arrayify (arr) ->
@@ -38,7 +38,7 @@ define [], ->
     #define parts of the buffer
     @frames
 
-    #setup the buffer 
+    #setup the buffer
     constructor: (frames) ->
       unless frames?
         #no parts, simply return a singular frame
