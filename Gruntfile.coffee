@@ -20,7 +20,7 @@ module.exports = (grunt) ->
   devices = grunt.file.readJSON('devices.json')
 
   #log some debugging information
-  grunt.log.oklns "Building Ferret. Version #{pkg.version}"
+  grunt.log.oklns "Building #{pkg.title}. Version #{pkg.version}"
   grunt.log.subhead "Using module: #{module}" for module in modules
   
   grunt.initConfig {
