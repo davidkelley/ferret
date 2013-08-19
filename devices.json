@@ -6,14 +6,18 @@
         "device": { "vendorId": 1208, "productId": 514 },
         "port": 0,
         "endpoint": 1,
-        "actions": "epson"
+        "vendor": "epson",
+        "product": "t70",
+        "buffer": ["prefix", "body", "suffix"]
       },
       {
         "name": "EPSON TM-T20",
         "device": { "vendorId": 1208, "productId": 13703 },
         "port": 0,
         "endpoint": 1,
-        "actions": "epson"
+        "vendor": "epson",
+        "product": "t20",
+        "buffer": ["prefix", "body", "suffix"]
       }
     ]
   }

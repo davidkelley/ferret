@@ -4,23 +4,23 @@
 define ['device', 'buffer'], (Device, Buffer) ->
   
   #get an active printer handle
-  device = new Device 'printers'
+  device = new Device 'printers', (foundDevice, info) ->
 
-  #define a buffer for this device
-  buffer = new Buffer ['prefix', 'body', 'suffix']
+    #define a buffer for this device
+    buffer = new Buffer info.buffer
 
-  #bind this buffer object to the device
-  device.bind buffer
+    #bind this buffer object to the device
+    foundDevice.bind buffer
 
   return (type, action, args) ->
-    
+
     #determine success to start with
     success = true
 
     switch type
       when "action"
         #load the set of actions for this device
-        require ["actions/#{device.device.actions}"], (actions) ->
+        require ["actions/#{device.info.vendor}/#{device.info.product}"], (actions) ->
 
           #find the object and function
           obj = null
@@ -61,6 +61,10 @@ define ['device', 'buffer'], (Device, Buffer) ->
 
       #buffer-based operation has been sent
       when "buffer" then success = buffer[action]?.apply args
+
+      #receive request operation has been sent
+      when "receive"
+        device.receive #TODO - Asynchronous callback
 
     #send a success callback in the same form
     require ['connector'], (connector) ->

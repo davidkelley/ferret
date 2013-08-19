@@ -22,7 +22,7 @@ define ['usb', 'devices'], (usb, devices) ->
     @_queued: [],
 
     #find the active device of type and setup handle
-    @constructor: (type, frames) ->
+    @constructor: (type, callback) ->
       #store context
       that = @
 
@@ -46,6 +46,9 @@ define ['usb', 'devices'], (usb, devices) ->
                     that._claimed = true
                     that._device = stored
                     that._handle = found[0]
+
+                    #callback any constructor 
+                    callback(that, that.info) if typeof callback is "function"
 
                     #proc any queued method calls
                     fn.call(that) for fn in that._queued
@@ -136,7 +139,7 @@ define ['usb', 'devices'], (usb, devices) ->
       return chrome.runtime.lastError.message
 
   #return the device object
-  Device.prototype.__defineGetter__ 'device', ->
+  Device.prototype.__defineGetter__ 'info', ->
     @_device
 
   #return the active device handle
