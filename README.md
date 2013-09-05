@@ -30,3 +30,30 @@ This project uses GruntJS to transform the coffeescript un-structured source fil
 * Compile all Coffeescript into Javascript and insert them into their respective location inside the `build` directory.
 * Run the RequireJS optimizer to resolve module dependencies and resolve the application to one file.
 * Uglify all Javascript inside the `build` directory.
+
+Communicating with Ferret
+-
+
+Messages are passed to Ferret via the standard cross-extension message passing mechanisms that Google details in their documentation here[http://developer.chrome.com/extensions/messaging.html].
+
+*Messages should take the following form:*
+
+<pre>
+{
+	"controller": "device-controller",
+	"type": "device-action-type",
+	"action": "action-to-perform-on-device",
+	"arguments": ["action-arg-1", "action-arg-2", ...]
+}
+</pre>
+
+*Replies are received from Ferret in a similar fashion, *
+
+<pre>
+{
+	"controller": "device-controller",
+	"type": "device-action-type",
+	"action": "action-to-perform-on-device",
+	"success": true,
+	"data": [...]
+}
